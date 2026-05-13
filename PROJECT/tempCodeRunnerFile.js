@@ -3,12 +3,9 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
 const path = require('path');
-const cors = require('cors');
 
 const prisma = new PrismaClient();
 const app = express();
-
-app.use(cors());
 
 app.use(express.json());
 
@@ -41,12 +38,12 @@ const saveToTrash = (data) => {
 
 // --- МАРШРУТИ ---
 
-// Головна
+// 1. Головна
 app.get('/', (req, res) => {
-    res.send('<h1>Мій Щоденник API </h1><p>Система з функцією Кошика та Експорту готова.</p>');
+    res.send('<h1>Мій Щоденник API 🚀</h1><p>Система з функцією Кошика та Експорту готова.</p>');
 });
 
-// Отримання записів (Пошук за тегом/датою)
+// 2. Отримання записів (Пошук за тегом/датою)
 app.get('/api/entries', async (req, res, next) => {
     try {
         const { tag, date } = req.query;
@@ -68,7 +65,7 @@ app.get('/api/entries', async (req, res, next) => {
     }
 });
 
-// Створення
+// 3. Створення
 app.post('/api/entries', async (req, res, next) => {
     try {
         const { content, tag } = req.body;
@@ -86,7 +83,7 @@ app.post('/api/entries', async (req, res, next) => {
     }
 });
 
-// Оновлення
+// 4. Оновлення
 app.put('/api/entries/:id', async (req, res, next) => {
     try {
         const id = parseInt(req.params.id);
@@ -107,7 +104,7 @@ app.put('/api/entries/:id', async (req, res, next) => {
     }
 });
 
-// ВИДАЛЕННЯ (з переміщенням у Кошик)
+// 5. ВИДАЛЕННЯ (з переміщенням у Кошик)
 app.delete('/api/entries/:id', async (req, res, next) => {
     try {
         const id = parseInt(req.params.id);
@@ -135,7 +132,7 @@ app.delete('/api/entries/:id', async (req, res, next) => {
     }
 });
 
-// ЕКСПОРТ У ФАЙЛ
+// 6. ЕКСПОРТ У ФАЙЛ
 // Доступно за посиланням: http://localhost:3000/api/entries/export
 app.get('/api/entries/export', async (req, res, next) => {
     try {
@@ -166,7 +163,7 @@ app.get('/api/entries/export', async (req, res, next) => {
     }
 });
 
-// ПЕРЕГЛЯД КОШИКА (через API)
+// 7. ПЕРЕГЛЯД КОШИКА (через API)
 app.get('/api/trash', (req, res) => {
     if (!fs.existsSync(TRASH_FILE_PATH)) return res.json({ message: "Кошик порожній", data: [] });
     const data = fs.readFileSync(TRASH_FILE_PATH, 'utf8');
@@ -184,7 +181,7 @@ app.use((err, req, res, next) => {
 
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Сервер запущено: http://localhost:${PORT}/api/entries`);
-    console.log(`Експорт: http://localhost:${PORT}/api/entries/export`);
-    console.log(`Кошик: http://localhost:${PORT}/api/trash`);
+    console.log(`🚀 Сервер запущено: http://localhost:${PORT}`);
+    console.log(`📂 Експорт: http://localhost:${PORT}/api/entries/export`);
+    console.log(`🗑️ Кошик (JSON): http://localhost:${PORT}/api/trash`);
 });
