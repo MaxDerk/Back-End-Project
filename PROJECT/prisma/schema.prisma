@@ -1,0 +1,16 @@
+generator client {
+     provider = "prisma-client-js"
+   }
+
+   datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+   model Entry {
+  id        Int      @id @default(autoincrement())
+  content   String
+  tag       String?  // Знак питання означає, що тег необов'язковий (можна зберегти запис і без нього)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
