@@ -1,0 +1,6 @@
+Самостійно створіть файл з назвою .env і впишіть в нього: DATABASE_URL="file:./dev.db"
+Список команд які вам необхідно прописати в терміналі щоб все працювало:
+npm install express
+npm install @prisma/client
+npm install dotenv
+npm install cors
