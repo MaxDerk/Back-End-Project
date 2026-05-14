@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diary</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #202124;
+        }
+
+        .container {
+            width: min(900px, 100%);
+            margin: 0 auto;
+            padding: 32px 16px;
+        }
+
+        h1 {
+            margin: 0 0 24px;
+            font-size: 32px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .form {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 28px;
+            padding: 16px;
+            background: #ffffff;
+            border: 1px solid #dedede;
+            border-radius: 8px;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            padding: 12px;
+            font: inherit;
+            border: 1px solid #c9c9c9;
+            border-radius: 6px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .actions,
+        .entry-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button,
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 14px;
+            font: inherit;
+            color: #ffffff;
+            text-decoration: none;
+            background: #1a73e8;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .button.secondary {
+            background: #5f6368;
+        }
+
+        .button.danger {
+            background: #c5221f;
+        }
+
+        .entries {
+            display: grid;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .entry {
+            padding: 16px;
+            background: #ffffff;
+            border: 1px solid #dedede;
+            border-radius: 8px;
+        }
+
+        .meta {
+            color: #5f6368;
+            font-size: 14px;
+        }
+
+        .tag {
+            padding: 4px 8px;
+            color: #185abc;
+            background: #e8f0fe;
+            border-radius: 999px;
+            font-size: 13px;
+        }
+
+        .content {
+            margin: 14px 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <h1>Diary</h1>
+
+        <section class="form">
+            <textarea id="contentInput" placeholder="What is on your mind?"></textarea>
+            <input id="tagInput" type="text" placeholder="Tag">
+            <div class="actions">
+                <button type="button" onclick="addEntry()">Add entry</button>
+                <a class="button secondary" href="/api/entries/export">Download .txt</a>
+            </div>
+        </section>
+
+        <section class="actions">
+            <h2>Entries</h2>
+            <a class="button secondary" href="/api/trash">Open trash JSON</a>
+        </section>
+
+        <section id="entryList" class="entries"></section>
+    </main>
+
+    <script>
+        const API_URL = '/api/entries';
+
+        async function fetchEntries() {
+            const response = await fetch(API_URL);
+            const entries = await response.json();
+            renderEntries(entries);
+        }
+
+        function renderEntries(entries) {
+            const list = document.getElementById('entryList');
+            list.innerHTML = '';
+
+            if (entries.length === 0) {
+                list.innerHTML = '<p class="meta">No entries yet.</p>';
+                return;
+            }
+
+            entries.forEach((entry) => {
+                const date = new Date(entry.createdAt).toLocaleString();
+                const card = document.createElement('article');
+                card.className = 'entry';
+                card.innerHTML = `
+                    <div class="entry-header">
+                        <span class="meta">${date}</span>
+                        ${entry.tag ? `<span class="tag">${entry.tag}</span>` : ''}
+                    </div>
+                    <div class="content"></div>
+                    <div class="actions">
+                        <span class="meta">ID: ${entry.id}</span>
+                        <button class="button danger" type="button" onclick="deleteEntry(${entry.id})">Delete</button>
+                    </div>
+                `;
+
+                card.querySelector('.content').textContent = entry.content;
+                list.appendChild(card);
+            });
+        }
+
+        async function addEntry() {
+            const contentInput = document.getElementById('contentInput');
+            const tagInput = document.getElementById('tagInput');
+            const content = contentInput.value;
+            const tag = tagInput.value;
+
+            if (!content.trim()) {
+                alert('Write something first.');
+                return;
+            }
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content, tag })
+            });
+
+            if (!response.ok) {
+                const result = await response.json();
+                alert(result.error || 'Could not save entry.');
+                return;
+            }
+
+            contentInput.value = '';
+            tagInput.value = '';
+            fetchEntries();
+        }
+
+        async function deleteEntry(id) {
+            if (!confirm('Delete this entry and move it to trash?')) {
+                return;
+            }
+
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            fetchEntries();
+        }
+
+        fetchEntries();
+    </script>
+</body>
+</html>
