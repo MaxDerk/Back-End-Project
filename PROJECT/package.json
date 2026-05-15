@@ -7,7 +7,10 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "test": "jest",
+    "test:cover": "jest --coverage",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -20,9 +23,14 @@
     "express": "^5.2.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/express": "^5.0.6",
     "@types/node": "^25.7.0",
+    "eslint": "^10.4.0",
+    "globals": "^17.6.0",
+    "jest": "^30.4.2",
     "prisma": "^5.22.0",
+    "supertest": "^7.2.2",
     "tsx": "^4.21.0"
   }
 }
