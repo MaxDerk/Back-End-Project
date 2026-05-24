@@ -15,7 +15,7 @@ function authenticate(req, res, next) {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
         next();
-    } catch (error) {
+    } catch {
         res.status(401).json({ error: 'Unauthorized: Invalid token' });
     }
 }
