@@ -11,6 +11,7 @@ const trashRoutes = require('./routes/trash.routes');
 const errorHandler = require('./middleware/error.middleware');
 
 const app = express();
+/* istanbul ignore next */
 const port = process.env.PORT || 3000;
 const swaggerSpec = swaggerJsdoc({
     definition: {
