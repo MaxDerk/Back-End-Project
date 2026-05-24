@@ -1,16 +1,28 @@
 generator client {
-     provider = "prisma-client-js"
-   }
+  provider = "prisma-client-js"
+}
 
-   datasource db {
+datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-   model Entry {
+model User {
   id        Int      @id @default(autoincrement())
-  content   String
-  tag       String?  // Знак питання означає, що тег необов'язковий (можна зберегти запис і без нього)
+  username  String   @unique
+  password  String
+  entries   Entry[]
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+model Entry {
+  id         Int      @id @default(autoincrement())
+  content    String
+  tag        String?
+  isRedacted Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
 }

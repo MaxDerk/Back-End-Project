@@ -237,4 +237,22 @@ describe('entries and trash API', () => {
 
         expect(fs.existsSync(exportPath)).toBe(false);
     });
+
+    it('uses the default Swagger server port when PORT is not configured', () => {
+        const originalPort = process.env.PORT;
+
+        jest.resetModules();
+        jest.doMock('dotenv', () => ({ config: jest.fn() }));
+        delete process.env.PORT;
+
+        expect(() => require('./src/app')).not.toThrow();
+
+        jest.dontMock('dotenv');
+        jest.resetModules();
+        if (originalPort === undefined) {
+            delete process.env.PORT;
+        } else {
+            process.env.PORT = originalPort;
+        }
+    });
 });
