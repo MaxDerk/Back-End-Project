@@ -1,6 +1,0 @@
-node_modules/
-.env
-coverage/
-tempCodeRunnerFile.js
-diary_export.txt
-server-*.log
