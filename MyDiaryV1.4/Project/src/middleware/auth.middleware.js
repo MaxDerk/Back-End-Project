@@ -12,7 +12,7 @@ function authenticate(req, res, next) {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
         next();
-    } catch (error) {
+    } catch () {
         const err = new Error('Unauthorized: Invalid token');
         err.statusCode = 401;
         next(err);
